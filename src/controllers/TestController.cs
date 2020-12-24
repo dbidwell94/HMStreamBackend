@@ -49,5 +49,11 @@ namespace HMStreamBackend.Controllers
         {
             return new ResponseEntity(test);
         }
+
+        [GetMapping("/param-test-arr", Produces = MediaTypes.ApplicationJson, Accepts = MediaTypes.ApplicationJson)]
+        public ResponseEntity ParameterTestArray(EndpointTest[] testArr)
+        {
+            return new ResponseEntity(testArr);
+        }
     }
 }
