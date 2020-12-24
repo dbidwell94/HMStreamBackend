@@ -5,7 +5,7 @@ using SimpleServer.Networking.Data;
 
 namespace HMStreamBackend.Controllers
 {
-    #nullable enable
+#nullable enable
     struct EndpointTest
     {
         public string? something;
@@ -17,7 +17,7 @@ namespace HMStreamBackend.Controllers
             this.someArr = someArr;
         }
     }
-    #nullable disable
+#nullable disable
 
     [RestController("/")]
     class TestController
@@ -54,6 +54,12 @@ namespace HMStreamBackend.Controllers
         public ResponseEntity ParameterTestArray(EndpointTest[] testArr)
         {
             return new ResponseEntity(testArr);
+        }
+
+        [GetMapping("/path-param-test/:name/test")]
+        public ResponseEntity PathParameterTest([PathParam] string name)
+        {
+            return new ResponseEntity(name);
         }
     }
 }
