@@ -1,8 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\CSharpSimpleServer\SimpleServer.csproj" />
     <PackageReference Include="Microsoft.NETCore.App" Version="2.2.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CSharpSimpleServer\SimpleServerMin.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
