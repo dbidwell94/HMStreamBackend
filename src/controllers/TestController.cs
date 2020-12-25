@@ -44,22 +44,33 @@ namespace HMStreamBackend.Controllers
             return new ResponseEntity(testArr);
         }
 
-        [GetMapping("/param-test", Produces = MediaTypes.ApplicationJson, Accepts = MediaTypes.ApplicationJson)]
-        public ResponseEntity ParameterTest(EndpointTest test)
+        [GetMapping("/video/:videoName", Produces = MediaTypes.ApplicationJson, Accepts = MediaTypes.ApplicationJson)]
+        public ResponseEntity PathParameterTest([PathParam] string videoName)
         {
-            return new ResponseEntity(test);
+            Dictionary<string, object> toReturn = new Dictionary<string, object>();
+            toReturn.Add("videoName", videoName);
+            return new ResponseEntity(toReturn);
         }
 
-        [GetMapping("/param-test-arr", Produces = MediaTypes.ApplicationJson, Accepts = MediaTypes.ApplicationJson)]
-        public ResponseEntity ParameterTestArray(EndpointTest[] testArr)
+        [GetMapping("/copytimes/:amount", Produces = MediaTypes.ApplicationJson, Accepts = MediaTypes.ApplicationJson)]
+        public ResponseEntity FullParameterTest([RequestBody] EndpointTest? endpointTest, [PathParam] int amount)
         {
-            return new ResponseEntity(testArr);
-        }
-
-        [GetMapping("/path-param-test/:name/test")]
-        public ResponseEntity PathParameterTest([PathParam] string name)
-        {
-            return new ResponseEntity(name);
+            EndpointTest[] toReturn;
+            if(endpointTest.HasValue)
+            {
+                toReturn = new EndpointTest[amount];
+                for (int i = 0; i < amount; i++)
+                {
+                    toReturn[i] = endpointTest.Value;
+                }
+            }
+            else
+            {
+                toReturn = null;
+            }
+            Dictionary<string, object> returnObj = new Dictionary<string, object>();
+            returnObj.Add("endpointTest", toReturn);
+            return new ResponseEntity(returnObj);
         }
     }
 }
