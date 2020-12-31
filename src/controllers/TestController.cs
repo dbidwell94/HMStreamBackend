@@ -1,7 +1,11 @@
+using System.Security.Authentication.ExtendedProtection;
 using System;
 using System.Collections.Generic;
 using SimpleServer.Attributes;
+using SimpleServer.Networking;
 using SimpleServer.Networking.Data;
+using SimpleServer.Networking.Headers;
+using HMStreamBackend.Services;
 
 namespace HMStreamBackend.Controllers
 {
@@ -11,10 +15,13 @@ namespace HMStreamBackend.Controllers
         public string? something;
         public IEnumerable<int>? someArr;
 
-        public EndpointTest(string something, IEnumerable<int> someArr)
+        public string requiredProp;
+
+        public EndpointTest(string something, IEnumerable<int> someArr, string requiredProp)
         {
             this.something = something;
             this.someArr = someArr;
+            this.requiredProp = requiredProp;
         }
     }
 #nullable disable
@@ -22,6 +29,10 @@ namespace HMStreamBackend.Controllers
     [RestController("/")]
     class TestController
     {
+        [Autowired]
+        public VideoServices videoServices { get; private set; }
+
+
         [GetMapping("/", Produces = MediaTypes.ApplicationJson, Accepts = MediaTypes.ApplicationJson)]
         public ResponseEntity TestMessage()
         {
@@ -38,7 +49,8 @@ namespace HMStreamBackend.Controllers
                 testArr[i] = new EndpointTest
                 {
                     something = $"This is a test to see if {i} works",
-                    someArr = new int[] { 1, 2, 3, 4, 5, 6, 7, 8 }
+                    someArr = new int[] { 1, 2, 3, 4, 5, 6, 7, 8 },
+                    requiredProp = "This is a required property"
                 };
             }
             return new ResponseEntity(testArr);
@@ -49,14 +61,18 @@ namespace HMStreamBackend.Controllers
         {
             Dictionary<string, object> toReturn = new Dictionary<string, object>();
             toReturn.Add("videoName", videoName);
-            return new ResponseEntity(toReturn);
+
+            var headers = new ServerResponseHeaders();
+            headers.SetCors(CorsHeader.BuildHeader("*"));
+
+            return new ResponseEntity(toReturn, headers);
         }
 
         [GetMapping("/copytimes/:amount", Produces = MediaTypes.ApplicationJson, Accepts = MediaTypes.ApplicationJson)]
         public ResponseEntity FullParameterTest([RequestBody] EndpointTest? endpointTest, [PathParam] int amount)
         {
             EndpointTest[] toReturn;
-            if(endpointTest.HasValue)
+            if (endpointTest.HasValue)
             {
                 toReturn = new EndpointTest[amount];
                 for (int i = 0; i < amount; i++)
@@ -70,7 +86,18 @@ namespace HMStreamBackend.Controllers
             }
             Dictionary<string, object> returnObj = new Dictionary<string, object>();
             returnObj.Add("endpointTest", toReturn);
-            return new ResponseEntity(returnObj);
+
+            ServerResponseHeaders headers = new ServerResponseHeaders();
+            headers.SetCors(CorsHeader.BuildHeader("*"));
+
+            return new ResponseEntity(returnObj, headers);
+        }
+
+        [GetMapping("/videoname", Accepts = MediaTypes.ApplicationJson, Produces = MediaTypes.ApplicationJson)]
+        public ResponseEntity GetVideoName()
+        {
+            ServerResponseHeaders headers = new ServerResponseHeaders();
+            return new ResponseEntity(videoServices.GetVideoName(), headers);
         }
     }
 }

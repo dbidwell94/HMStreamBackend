@@ -1,6 +1,6 @@
 ﻿using System;
 using SimpleServer;
-using SimpleServer.Exceptions;
+using System.Threading;
 
 namespace HMStreamBackend
 {
@@ -8,12 +8,13 @@ namespace HMStreamBackend
     {
         static void Main(string[] args)
         {
+            Server.RegisterEndpoints();
             Server.Start(2019);
             Server.onRequestReceived += LogMessage;
             Server.onServerStart += LogMessage;
+            Server.onServerStop += LogMessage;
             Server.onEndpointRegistrationFinished += LogMessage;
             Server.onServerError += LogMessage;
-            Server.RegisterEndpoints();
         }
 
         private static void LogMessage(ServerEventData eventData)

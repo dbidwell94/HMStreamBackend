@@ -5,15 +5,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CSharpSimpleServer\SimpleServerMin.csproj" />
+    <ProjectReference Include="..\CSharpSimpleServer\ServerLibrary\SimpleServerMin.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>8.0</LangVersion>
-    <SelfContained>true</SelfContained>
-    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>false</SelfContained>
+    <PublishSingleFile>false</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
     <PublishReadyToRun>false</PublishReadyToRun>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
