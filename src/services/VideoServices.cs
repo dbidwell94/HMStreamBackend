@@ -3,6 +3,7 @@ using System.IO;
 using SimpleServer.Attributes;
 using System.Collections.Generic;
 using System.Diagnostics;
+using HMStreamBackend.Dtos;
 
 namespace HMStreamBackend.Services
 {
@@ -11,19 +12,29 @@ namespace HMStreamBackend.Services
     {
         public static string VideoDirectory { get; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyVideos), "HMStream");
 
-        public byte[] GetBytes(long from, long to)
+        static VideoServices()
         {
+            if (!Directory.Exists(VideoDirectory))
+            {
+                Directory.CreateDirectory(VideoDirectory);
+            }
+        }
+
+        public byte[] GetBytes(string name, long from, long to)
+        {
+            System.Console.WriteLine($"{name} --- lower: {from} upper: {to}");
             throw new NotImplementedException();
         }
 
-        public Dictionary<string, object> GetVideoName()
+        public Video GetVideoByName(string name)
         {
-            return new Dictionary<string, object>() { { "videoName", "Look at this awesome video name!" } };
-        }
-
-        private string GetDebuggerDisplay()
-        {
-            return ToString();
+            if (File.Exists(Path.Combine(VideoDirectory, name)))
+            {
+                FileInfo info = new FileInfo(Path.Combine(VideoDirectory, name));
+                var toReturn = new Video(info.Length, name);
+                return toReturn;
+            }
+            return null;
         }
     }
 }

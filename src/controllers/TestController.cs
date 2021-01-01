@@ -1,10 +1,7 @@
-using System.Net.Http.Headers;
-using System.Security.Authentication.ExtendedProtection;
-using System;
-using System.Collections.Generic;
+using System.Net;
 using SimpleServer.Attributes;
-using SimpleServer.Networking;
 using SimpleServer.Networking.Data;
+using SimpleServer.Networking;
 using SimpleServer.Networking.Headers;
 using HMStreamBackend.Services;
 
@@ -13,14 +10,31 @@ namespace HMStreamBackend.Controllers
     [RestController("/")]
     class TestController
     {
+        public static ServerResponseHeaders Headers { get; private set; } = new ServerResponseHeaders();
 
         [Autowired]
-        public VideoServices videoServices{ get; private set; }
+        public VideoServices videoServices { get; private set; }
 
-        [GetMapping("/video/:videoName", Produces = MediaTypes.ApplicationJson, Accepts = MediaTypes.ApplicationJson)]
-        public ResponseEntity GetVideoBytes([PathParam] string videoName, [Injected] HttpRequestHeaders requestHeaders)
+        [Autowired]
+        public HelperFunctions helperFunctions { get; private set; }
+
+
+        public TestController()
         {
-            return new ResponseEntity(new object[] { videoServices.GetVideoName(), requestHeaders.Range.Ranges });
+            Headers.SetCors(CorsHeader.BuildHeader("*"));
+        }
+
+        [GetMapping("/video/:videoName/size", Produces = MediaTypes.ApplicationJson, Accepts = MediaTypes.ApplicationJson)]
+        public ResponseEntity GetVideoByName([PathParam] string videoName)
+        {
+            return new ResponseEntity(videoServices.GetVideoByName(videoName), Headers);
+        }
+
+        [GetMapping("/video/:videoName/bytes", Produces = MediaTypes.ApplicationJson, Accepts = MediaTypes.ApplicationJson)]
+        public byte[] GetVideoBytes([PathParam] string videoName, [Injected] WebHeaderCollection headers)
+        {
+            var range = helperFunctions.RangeHeaderToBytes(headers.Get("Range"));
+            return videoServices.GetBytes(videoName, range.lower, range.upper);
         }
     }
 }
