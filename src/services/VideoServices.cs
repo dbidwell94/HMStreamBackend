@@ -30,7 +30,7 @@ namespace HMStreamBackend.Services
                 }
                 return buffer;
             }
-            return null;
+            throw new Exception($"Video {name} does not exist");
         }
 
         public Video GetVideoByName(string name)

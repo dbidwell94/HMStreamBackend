@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using SimpleServer.Attributes;
 using SimpleServer.Networking.Data;
@@ -34,6 +35,10 @@ namespace HMStreamBackend.Controllers
         [GetMapping("/video/:videoName/bytes", Produces = MediaTypes.ApplicationJson, Accepts = MediaTypes.ApplicationJson)]
         public ResponseEntity GetVideoBytes([PathParam] string videoName, [Injected] WebHeaderCollection headers)
         {
+            if (headers.Get("Range") == null)
+            {
+                throw new Exception("No range header present");
+            }
             var range = helperFunctions.RangeHeaderToBytes(headers.Get("Range"));
             byte[] videoData = videoServices.GetBytes(videoName, range.upper, range.lower);
             VideoByteData data = new VideoByteData(videoData, videoData.Length);
