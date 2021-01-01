@@ -4,6 +4,7 @@ using SimpleServer.Networking.Data;
 using SimpleServer.Networking;
 using SimpleServer.Networking.Headers;
 using HMStreamBackend.Services;
+using HMStreamBackend.Dtos;
 
 namespace HMStreamBackend.Controllers
 {
@@ -31,10 +32,12 @@ namespace HMStreamBackend.Controllers
         }
 
         [GetMapping("/video/:videoName/bytes", Produces = MediaTypes.ApplicationJson, Accepts = MediaTypes.ApplicationJson)]
-        public byte[] GetVideoBytes([PathParam] string videoName, [Injected] WebHeaderCollection headers)
+        public ResponseEntity GetVideoBytes([PathParam] string videoName, [Injected] WebHeaderCollection headers)
         {
             var range = helperFunctions.RangeHeaderToBytes(headers.Get("Range"));
-            return videoServices.GetBytes(videoName, range.lower, range.upper);
+            byte[] videoData = videoServices.GetBytes(videoName, range.upper, range.lower);
+            VideoByteData data = new VideoByteData(videoData, videoData.Length);
+            return new ResponseEntity(data, Headers);
         }
     }
 }

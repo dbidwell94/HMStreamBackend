@@ -22,9 +22,7 @@ namespace HMStreamBackend
             string message = "";
             if (eventData.exception != null)
             {
-                Console.WriteLine(eventData.exception.StackTrace);
-                Console.WriteLine(eventData.exception.Message);
-                Console.WriteLine(eventData.exception.TargetSite);
+                Console.WriteLine(eventData.exception.ToString());
             }
             if (eventData.path != null)
             {

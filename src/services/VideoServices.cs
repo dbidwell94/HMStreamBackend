@@ -1,8 +1,6 @@
 using System;
 using System.IO;
 using SimpleServer.Attributes;
-using System.Collections.Generic;
-using System.Diagnostics;
 using HMStreamBackend.Dtos;
 
 namespace HMStreamBackend.Services
@@ -20,10 +18,19 @@ namespace HMStreamBackend.Services
             }
         }
 
-        public byte[] GetBytes(string name, long from, long to)
+        public byte[] GetBytes(string name, long upper, long lower)
         {
-            System.Console.WriteLine($"{name} --- lower: {from} upper: {to}");
-            throw new NotImplementedException();
+            if (File.Exists(Path.Combine(VideoDirectory, name)))
+            {
+                var buffer = new byte[upper - lower];
+                using (var reader = new FileStream(Path.Combine(VideoDirectory, name), FileMode.Open))
+                {
+                    reader.Seek(lower, SeekOrigin.Begin);
+                    reader.Read(buffer, 0, buffer.Length);
+                }
+                return buffer;
+            }
+            return null;
         }
 
         public Video GetVideoByName(string name)
