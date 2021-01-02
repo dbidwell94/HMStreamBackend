@@ -32,6 +32,7 @@ namespace HMStreamBackend.Controllers
             return new ResponseEntity(videoServices.GetVideoByName(videoName), Headers);
         }
 
+        [AllowHeaders("Range,Allow")]
         [GetMapping("/video/:videoName/bytes", Produces = MediaTypes.ApplicationJson, Accepts = MediaTypes.ApplicationJson)]
         public ResponseEntity GetVideoBytes([PathParam] string videoName, [Injected] WebHeaderCollection headers)
         {
