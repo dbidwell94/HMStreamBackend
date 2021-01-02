@@ -22,7 +22,7 @@ namespace HMStreamBackend.Config
         public ResponseEntity HandleEndpointNotValidException(ServerEndpointNotValidException exception)
         {
             var toReturn = ExceptionData.MakeExceptionData("REST Endpoint not valid", exception);
-            return new ResponseEntity(toReturn, Headers, exception.Status);
+            return new ResponseEntity(toReturn, Headers, HttpStatus.NOT_FOUND);
         }
 
         public ResponseEntity HandleServerRequestMethodNotSupportedException(ServerRequestMethodNotSupportedException exception)
