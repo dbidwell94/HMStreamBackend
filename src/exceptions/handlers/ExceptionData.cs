@@ -11,10 +11,10 @@ namespace HMStreamBackend.Exceptions
 #nullable disable
             var toReturn = new Dictionary<string, object>();
             toReturn.Add("timestamp", DateTime.Now);
-            toReturn.Add("message", thrownException.Message);
+            toReturn.Add("message", GetInnerException(thrownException));
             toReturn.Add("details", details);
             toReturn.Add("path", thrownException.TargetSite.Name);
-            toReturn.Add("errors", GetInnerException(thrownException));
+            toReturn.Add("errors", thrownException.Message);
             toReturn.Add("developerInfo", GetStackTrace(thrownException));
             return toReturn;
         }

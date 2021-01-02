@@ -14,7 +14,7 @@ namespace HMStreamBackend
             Server.onServerStart += LogMessage;
             Server.onServerStop += LogMessage;
             Server.onEndpointRegistrationFinished += LogMessage;
-            Server.onServerError += LogMessage;
+            //Server.onServerError += LogMessage;
         }
 
         private static void LogMessage(ServerEventData eventData)

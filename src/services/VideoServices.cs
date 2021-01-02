@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using SimpleServer.Attributes;
 using HMStreamBackend.Dtos;
+using HMStreamBackend.Exceptions;
+using SimpleServer.Networking.Data;
 
 namespace HMStreamBackend.Services
 {
@@ -30,7 +32,7 @@ namespace HMStreamBackend.Services
                 }
                 return buffer;
             }
-            throw new Exception($"Video {name} does not exist");
+            throw new EntityNotFoundException($"Video {name} does not exist");
         }
 
         public Video GetVideoByName(string name)
@@ -41,7 +43,7 @@ namespace HMStreamBackend.Services
                 var toReturn = new Video(info.Length, name);
                 return toReturn;
             }
-            return null;
+            throw new EntityNotFoundException($"Video {name} does not exist");
         }
     }
 }
