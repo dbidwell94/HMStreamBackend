@@ -1,7 +1,7 @@
 using System.IO;
 using System;
-using MediaToolkit.Model;
-
+using FFMpegWrapper.Models;
+using FFMpegWrapper.Options;
 
 namespace HMStreamBackend.Dtos
 {
@@ -10,18 +10,20 @@ namespace HMStreamBackend.Dtos
         public long VideoSize { get; private set; }
         public string VideoName { get; private set; }
         public TimeSpan Duration { get; private set; }
-        public string VideoFormat { get; private set; }
-        public string AudioFormat { get; private set; }
+        public VideoCodec VideoFormat { get; private set; }
+        public AudioCodec AudioFormat { get; private set; }
         public double Fps { get; private set; }
+        public string Bitrate { get; private set; }
 
-        public Video(FileInfo videoFile, Metadata fileData)
+        public Video(FileInfo videoFile, MediaFileInfo fileData)
         {
             VideoSize = videoFile.Length;
             VideoName = videoFile.Name;
             Duration = fileData.Duration;
-            VideoFormat = fileData.VideoData.Format;
-            AudioFormat = fileData.AudioData.Format;
-            Fps = fileData.VideoData.Fps;
+            VideoFormat = fileData.VideoCodec;
+            AudioFormat = fileData.AudioCodec;
+            Fps = fileData.Fps;
+            Bitrate = fileData.Bitrate;
         }
     }
 }

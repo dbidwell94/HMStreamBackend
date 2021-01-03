@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Threading.Tasks;
 using SimpleServer.Attributes;
 using SimpleServer.Networking.Data;
 using SimpleServer.Networking;
@@ -41,9 +42,10 @@ namespace HMStreamBackend.Controllers
         }
 
         [GetMapping("/video/:videoName", Accepts = MediaTypes.ApplicationJson, Produces = MediaTypes.ApplicationJson)]
-        public ResponseEntity GetVideoData([PathParam] string videoName, [Injected] WebHeaderCollection headers)
+        public async Task<ResponseEntity> GetVideoData([PathParam] string videoName, [Injected] WebHeaderCollection headers)
         {
-            return new ResponseEntity(videoServices.GetVideoDetails(videoName), Headers);
+            var details = await videoServices.GetVideoDetails(videoName);
+            return new ResponseEntity(details, Headers);
         }
     }
 }

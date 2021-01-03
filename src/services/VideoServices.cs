@@ -1,9 +1,10 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using SimpleServer.Attributes;
 using HMStreamBackend.Dtos;
 using HMStreamBackend.Exceptions;
-using MediaToolkit;
+using FFMpegWrapper;
 
 namespace HMStreamBackend.Services
 {
@@ -40,15 +41,13 @@ namespace HMStreamBackend.Services
             return buffer;
         }
 
-        public Video GetVideoDetails(string name)
+        public async Task<Video> GetVideoDetails(string name)
         {
             CheckVideoExists(name);
-            using (var engine = new Engine("/usr/bin/ffmpeg"))
-            {
-                var inputFile = new MediaToolkit.Model.MediaFile(Path.Combine(VideoDirectory, name));
-                engine.GetMetadata(inputFile);
-                return new Video(new FileInfo(Path.Combine(VideoDirectory, name)), inputFile.Metadata);
-            }
+            var wrapper = new Wrapper();
+            var fileInfo = new FileInfo(Path.Combine(VideoDirectory, name));
+            var fileData = await wrapper.Input(fileInfo).GetInputInfo();
+            return new Video(fileInfo, fileData);
         }
     }
 }
