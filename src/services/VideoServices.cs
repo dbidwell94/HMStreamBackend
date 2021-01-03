@@ -3,7 +3,7 @@ using System.IO;
 using SimpleServer.Attributes;
 using HMStreamBackend.Dtos;
 using HMStreamBackend.Exceptions;
-using SimpleServer.Networking.Data;
+using MediaToolkit;
 
 namespace HMStreamBackend.Services
 {
@@ -11,6 +11,14 @@ namespace HMStreamBackend.Services
     class VideoServices : IVideoServices
     {
         public static string VideoDirectory { get; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyVideos), "HMStream");
+
+        private void CheckVideoExists(string name)
+        {
+            if (!File.Exists(Path.Combine(VideoDirectory, name)))
+            {
+                throw new EntityNotFoundException($"Video {name} does not exist");
+            }
+        }
 
         static VideoServices()
         {
@@ -22,28 +30,25 @@ namespace HMStreamBackend.Services
 
         public byte[] GetBytes(string name, long upper, long lower)
         {
-            if (File.Exists(Path.Combine(VideoDirectory, name)))
+            CheckVideoExists(name);
+            var buffer = new byte[upper - lower];
+            using (var reader = new FileStream(Path.Combine(VideoDirectory, name), FileMode.Open))
             {
-                var buffer = new byte[upper - lower];
-                using (var reader = new FileStream(Path.Combine(VideoDirectory, name), FileMode.Open))
-                {
-                    reader.Seek(lower, SeekOrigin.Begin);
-                    reader.Read(buffer, 0, buffer.Length);
-                }
-                return buffer;
+                reader.Seek(lower, SeekOrigin.Begin);
+                reader.Read(buffer, 0, buffer.Length);
             }
-            throw new EntityNotFoundException($"Video {name} does not exist");
+            return buffer;
         }
 
-        public Video GetVideoByName(string name)
+        public Video GetVideoDetails(string name)
         {
-            if (File.Exists(Path.Combine(VideoDirectory, name)))
+            CheckVideoExists(name);
+            using (var engine = new Engine("/usr/bin/ffmpeg"))
             {
-                FileInfo info = new FileInfo(Path.Combine(VideoDirectory, name));
-                var toReturn = new Video(info.Length, name);
-                return toReturn;
+                var inputFile = new MediaToolkit.Model.MediaFile(Path.Combine(VideoDirectory, name));
+                engine.GetMetadata(inputFile);
+                return new Video(new FileInfo(Path.Combine(VideoDirectory, name)), inputFile.Metadata);
             }
-            throw new EntityNotFoundException($"Video {name} does not exist");
         }
     }
 }

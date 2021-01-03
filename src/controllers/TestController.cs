@@ -26,12 +26,6 @@ namespace HMStreamBackend.Controllers
             Headers.SetCors(CorsHeader.BuildHeader("*"));
         }
 
-        [GetMapping("/video/:videoName/size", Produces = MediaTypes.ApplicationJson, Accepts = MediaTypes.ApplicationJson)]
-        public ResponseEntity GetVideoByName([PathParam] string videoName)
-        {
-            return new ResponseEntity(videoServices.GetVideoByName(videoName), Headers);
-        }
-
         [AllowHeaders("Range,Allow")]
         [GetMapping("/video/:videoName/bytes", Produces = MediaTypes.ApplicationJson, Accepts = MediaTypes.ApplicationJson)]
         public ResponseEntity GetVideoBytes([PathParam] string videoName, [Injected] WebHeaderCollection headers)
@@ -44,6 +38,12 @@ namespace HMStreamBackend.Controllers
             byte[] videoData = videoServices.GetBytes(videoName, range.upper, range.lower);
             VideoByteData data = new VideoByteData(videoData, videoData.Length);
             return new ResponseEntity(data, Headers);
+        }
+
+        [GetMapping("/video/:videoName", Accepts = MediaTypes.ApplicationJson, Produces = MediaTypes.ApplicationJson)]
+        public ResponseEntity GetVideoData([PathParam] string videoName, [Injected] WebHeaderCollection headers)
+        {
+            return new ResponseEntity(videoServices.GetVideoDetails(videoName), Headers);
         }
     }
 }
