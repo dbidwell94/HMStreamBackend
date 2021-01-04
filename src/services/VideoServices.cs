@@ -29,16 +29,33 @@ namespace HMStreamBackend.Services
             }
         }
 
-        public byte[] GetBytes(string name, long upper, long lower)
+        public (byte[] videoData, long totalSize, long upper, long lower) GetBytes(string name, long upper, long lower)
         {
             CheckVideoExists(name);
+            FileInfo info = new FileInfo(Path.Combine(VideoDirectory, name));
+
+            // Some sanity checks here
+            if (upper > info.Length)
+            {
+                upper = info.Length;
+            }
+            if (lower < 0)
+            {
+                throw new Exception("Lower range cannot be lower than 0");
+            }
+            if (upper < lower)
+            {
+                throw new Exception("Upper range cannot be lower than lower range");
+            }
+
             var buffer = new byte[upper - lower];
-            using (var reader = new FileStream(Path.Combine(VideoDirectory, name), FileMode.Open))
+            long size = info.Length;
+            using (var reader = new FileStream(info.FullName, FileMode.Open))
             {
                 reader.Seek(lower, SeekOrigin.Begin);
                 reader.Read(buffer, 0, buffer.Length);
             }
-            return buffer;
+            return (videoData: buffer, totalSize: size, upper: upper, lower: lower);
         }
 
         public async Task<Video> GetVideoDetails(string name)

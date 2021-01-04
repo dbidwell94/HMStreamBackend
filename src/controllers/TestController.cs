@@ -36,13 +36,14 @@ namespace HMStreamBackend.Controllers
                 throw new Exception("No range header present");
             }
             var range = helperFunctions.RangeHeaderToBytes(headers.Get("Range"));
-            byte[] videoData = videoServices.GetBytes(videoName, range.upper, range.lower);
-            VideoByteData data = new VideoByteData(videoData, videoData.Length);
+            var videoData = videoServices.GetBytes(videoName, range.upper, range.lower);
+            var remaining = videoData.totalSize - videoData.upper;
+            VideoByteData data = new VideoByteData(videoData.videoData, remaining);
             return new ResponseEntity(data, Headers);
         }
 
         [GetMapping("/video/:videoName", Accepts = MediaTypes.ApplicationJson, Produces = MediaTypes.ApplicationJson)]
-        public async Task<ResponseEntity> GetVideoData([PathParam] string videoName, [Injected] WebHeaderCollection headers)
+        public async Task<ResponseEntity> GetVideoData([PathParam] string videoName)
         {
             var details = await videoServices.GetVideoDetails(videoName);
             return new ResponseEntity(details, Headers);

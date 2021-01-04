@@ -10,8 +10,8 @@ namespace HMStreamBackend.Dtos
         public long VideoSize { get; private set; }
         public string VideoName { get; private set; }
         public TimeSpan Duration { get; private set; }
-        public VideoCodec VideoFormat { get; private set; }
-        public AudioCodec AudioFormat { get; private set; }
+        public string VideoFormat { get; private set; }
+        public string AudioFormat { get; private set; }
         public double Fps { get; private set; }
         public string Bitrate { get; private set; }
 
@@ -20,8 +20,8 @@ namespace HMStreamBackend.Dtos
             VideoSize = videoFile.Length;
             VideoName = videoFile.Name;
             Duration = fileData.Duration;
-            VideoFormat = fileData.VideoCodec;
-            AudioFormat = fileData.AudioCodec;
+            VideoFormat = fileData.VideoCodec.ToString();
+            AudioFormat = fileData.AudioCodec.ToString();
             Fps = fileData.Fps;
             Bitrate = fileData.Bitrate;
         }

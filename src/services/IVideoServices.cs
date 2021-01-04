@@ -5,7 +5,7 @@ namespace HMStreamBackend.Services
 {
     public interface IVideoServices
     {
-        byte[] GetBytes(string name, long from, long to);
+        (byte[] videoData, long totalSize, long upper, long lower) GetBytes(string name, long from, long to);
         Task<Video> GetVideoDetails(string name);
     }
 }
