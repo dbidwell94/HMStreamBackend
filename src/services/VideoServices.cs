@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace HMStreamBackend.Services
     class VideoServices : IVideoServices
     {
         public static string VideoDirectory { get; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyVideos), "HMStream");
+        public static readonly HashSet<string> ValidVideoExtensions = new HashSet<string>() { ".webm", ".mp4", ".avi", ".mov" };
 
         private void CheckVideoExists(string name)
         {
@@ -65,6 +67,21 @@ namespace HMStreamBackend.Services
             var fileInfo = new FileInfo(Path.Combine(VideoDirectory, name));
             var fileData = await wrapper.Input(fileInfo).GetInputInfo();
             return new Video(fileInfo, fileData);
+        }
+
+        public async Task<Video[]> GetVideoLibrary()
+        {
+            var videos = new List<Video>();
+            foreach (var file in Directory.GetFiles(VideoDirectory))
+            {
+                var info = new FileInfo(file);
+                System.Console.WriteLine(info.Extension);
+                if (ValidVideoExtensions.Contains(info.Extension))
+                {
+                    videos.Add(await GetVideoDetails(file));
+                }
+            }
+            return videos.ToArray();
         }
     }
 }

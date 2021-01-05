@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.App" Version="2.2.8" />
+    <PackageReference Include="Mono.Nat" Version="3.0.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -11,7 +11,7 @@ using HMStreamBackend.Dtos;
 namespace HMStreamBackend.Controllers
 {
     [RestController("/")]
-    class TestController
+    class VideoController
     {
         public static ServerResponseHeaders Headers { get; private set; } = new ServerResponseHeaders();
 
@@ -22,7 +22,7 @@ namespace HMStreamBackend.Controllers
         public HelperFunctions helperFunctions { get; private set; }
 
 
-        public TestController()
+        public VideoController()
         {
             Headers.SetCors(CorsHeader.BuildHeader("*"));
         }
@@ -47,6 +47,13 @@ namespace HMStreamBackend.Controllers
         {
             var details = await videoServices.GetVideoDetails(videoName);
             return new ResponseEntity(details, Headers);
+        }
+
+        [GetMapping("/videos", Accepts = MediaTypes.ApplicationJson, Produces = MediaTypes.ApplicationJson)]
+        public async Task<ResponseEntity> GetVideoLibrary()
+        {
+            var videos = await videoServices.GetVideoLibrary();
+            return new ResponseEntity(videos, Headers);
         }
     }
 }

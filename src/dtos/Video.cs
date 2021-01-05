@@ -9,10 +9,10 @@ namespace HMStreamBackend.Dtos
     {
         public long VideoSize { get; private set; }
         public string VideoName { get; private set; }
-        public TimeSpan Duration { get; private set; }
+        public TimeSpan? Duration { get; private set; }
         public string VideoFormat { get; private set; }
         public string AudioFormat { get; private set; }
-        public double Fps { get; private set; }
+        public double? Fps { get; private set; }
         public string Bitrate { get; private set; }
 
         public Video(FileInfo videoFile, MediaFileInfo fileData)
