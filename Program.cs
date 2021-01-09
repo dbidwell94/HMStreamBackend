@@ -1,16 +1,21 @@
-﻿using System.Net.NetworkInformation;
+﻿using System.Threading;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Net.NetworkInformation;
 using System.Net;
 using System;
 using SimpleServer;
 using System.Linq;
 using Mono.Nat;
+using HMStreamBackend.BackendUtils;
 
 namespace HMStreamBackend
 {
     static class Program
     {
-        const int PORT = 2019;
-        static INatDevice gatewayDevice;
+        const string MAIN_BACKEND = "http://localhost:2021";
+        public const int PORT = 2019;
+        internal static INatDevice gatewayDevice;
         static IPAddress gatewayAddress = null;
         static void Main(string[] args)
         {
@@ -30,9 +35,14 @@ namespace HMStreamBackend
                 gatewayAddress = gateway;
                 NatUtility.StartDiscovery(new NatProtocol[] { NatProtocol.Upnp, NatProtocol.Pmp });
             }
+
+            Task.Run(() =>
+            {
+                BackendManager.AuthWithServer();
+            });
         }
 
-        private static void LogMessage(ServerEventData eventData)
+        public static void LogMessage(ServerEventData eventData)
         {
             string message = "";
             if (eventData.exception != null)
@@ -76,9 +86,13 @@ namespace HMStreamBackend
                 System.Console.WriteLine($"Server mapped to {mappingResult.PrivatePort} on router port {mappingResult.PublicPort}");
                 string hostName = Dns.GetHostName();
                 string myIp = Dns.GetHostEntry(hostName).AddressList[0].ToString();
-                System.Console.WriteLine($"Your IP address: {myIp}");
                 var externalIp = await e.Device.GetExternalIPAsync();
-                System.Console.WriteLine($"You external IP address is {externalIp.ToString()}");
+                gatewayDevice = e.Device;
+
+                await Task.Run(() =>
+                        {
+                            BackendManager.ServerPing();
+                        });
             }
         }
 
